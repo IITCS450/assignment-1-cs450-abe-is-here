@@ -147,22 +147,25 @@ int main(int c,char**v){
     snprintf(statusp, sizeof(statusp), "/proc/%s/status",pid);
     snprintf(cmdp, sizeof(cmdp), "/proc/%s/cmdline", pid);
 
-    printf("PID: %s\n", pid);
-    print_cmdline(cmdp);
-///////////
-    long rss = read_vmrss_kb(statusp);
-    if (rss>0) printf("VmRSS: %ld kB\n", rss);
-    else printf("VmRSS: (not found)\n");
-//////////
     char state;
     long ppid;
-    read_state_ppid(statp, &state, &ppid);
+    double cpu = read_cpu_seconds(statp);
+    long rss = read_vmrss_kb(statusp);
 
+    //Output
+    printf("PID: %s\n", pid);
+
+    read_state_ppid(statp, &state, &ppid);
     printf("State: %c\n", state);
     printf("PPID: %ld\n", ppid);
-//////////
-    double cpu = read_cpu_seconds(statp);
+    
+    print_cmdline(cmdp);
+
     printf("CPU: %.3f\n", cpu);
 
+    if (rss>0) printf("VmRSS: %ld kB\n", rss);
+    else printf("VmRSS: (not found)\n");
+    //
+    
     return 0;
 }
